@@ -1,6 +1,6 @@
 'use strict'
 
-import { app, protocol, BrowserWindow } from 'electron'
+import { app, protocol, BrowserWindow, ipcMain } from 'electron'
 import {
     createProtocol,
     /* installVueDevtools */
@@ -96,3 +96,9 @@ if (isDevelopment) {
         })
     }
 }
+
+// 窗口操作
+ipcMain.on('winmin', () => win.minimize())
+ipcMain.on('winmax', () => win.maximize())
+ipcMain.on('unwinmax', () => win.unmaximize())
+ipcMain.on('winclose', () => win.close())

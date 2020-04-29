@@ -5,6 +5,13 @@ function resolve (dir) {
 }
 
 module.exports = {
+    css: {
+        loaderOptions: {
+            stylus: {
+                import: '~@/common/stylus/global.styl'
+            }
+        }
+    },
     publicPath: './',
     devServer: {
         // can be overwritten by process.env.HOST
@@ -17,7 +24,7 @@ module.exports = {
         .set('public', resolve('public'))
         .set('@', resolve('src'))
         .set('src', resolve('src'))
-        .set('assets', resolve('src/assets'))
+        .set('common', resolve('src/common'))
         .set('components', resolve('src/components'))
         .set('views', resolve('src/views'))
     },
