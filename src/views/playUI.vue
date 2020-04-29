@@ -1,14 +1,20 @@
 <template>
     <div class="playUI">
-        播放界面
+        <div style="height: 100px"></div>
+        <player-control class="control"></player-control>
     </div>
 </template>
 
 <script>
+    import PlayerControl from "components/PlayerControl/PlayerControl"
+
     export default {
         props: {},
         data() {
             return {}
+        },
+        components: {
+            PlayerControl
         },
         methods: {}
     }
@@ -22,4 +28,9 @@
         position absolute
         top 0
         left 0
+        display flex
+        flex-flow column nowrap
+        justify-content space-between
+        .control
+            margin-bottom 10px
 </style>

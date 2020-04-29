@@ -3,11 +3,12 @@
         <top :menuShow="menuShow" @switch-lib="switchLib"></top>
         <play-u-i></play-u-i>
         <menu-u-i :class="menu_class" v-show="menuShowV"></menu-u-i>
-        <audio src="public/Akie秋绘%20-%20愛言葉Ⅲ（Cover：初音ミク）.mp3"></audio>
+        <audio :src="currentPlayingMusic.url" ref="audio"></audio>
     </div>
 </template>
 
 <script>
+    import { mapState, mapMutations } from 'vuex'
     import Top from "components/Top/Top"
     import playUI from "views/playUI"
     import menuUI from "views/menuUI"
@@ -31,17 +32,25 @@
             }
         },
         computed: {
+            ...mapState(['currentPlayingMusic']),
             menu_class() {
                 if (this.menuShow === false) {
                     return 'hide-menu'
                 }
                 return 'show-menu'
-            }
+            },
+        },
+        mounted() {
+            this.setAudio(this.$refs.audio)
+        },
+        update() {
+            this.setAudio(this.$refs.audio)
         },
         components: {
             Top, playUI, menuUI
         },
         methods: {
+            ...mapMutations(['setAudio']),
             switchLib() {
                 this.menuShow = !this.menuShow
             }
