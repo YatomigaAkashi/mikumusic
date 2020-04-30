@@ -1,5 +1,6 @@
 'use strict'
 
+import fs from 'fs'
 import { app, protocol, BrowserWindow, ipcMain } from 'electron'
 import {
     createProtocol,
@@ -27,6 +28,10 @@ function createWindow () {
             nodeIntegration: true,
             webSecurity: false
         }
+    })
+    
+    win.webContents.on('did-finish-load', function() {
+        win.webContents.send('load-lyrics', parseLyrics('I:/electron/mikumusic/public/爱言叶III'));
     })
     
     if (process.env.WEBPACK_DEV_SERVER_URL) {
@@ -102,3 +107,9 @@ ipcMain.on('winmin', () => win.minimize())
 ipcMain.on('winmax', () => win.maximize())
 ipcMain.on('unwinmax', () => win.unmaximize())
 ipcMain.on('winclose', () => win.close())
+
+
+// 解析歌词
+function parseLyrics(path) {
+    return fs.readFileSync(path, 'utf-8')
+}
