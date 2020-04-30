@@ -17,7 +17,7 @@
             </div>
             <div>
                 <progress-bar ref="progressBar" @dragMusic="dragMusic" :max="music.max"
-                    @playEnd="" @updateProgress="updateProgress"
+                    @playEnd="playEnd" @updateProgress="updateProgress"
                 >
                 </progress-bar>
             </div>
@@ -88,12 +88,8 @@
             }
         },
         watch: {
-            currentPlayMusicID() {
-                this.progressBar.init()
-                setTimeout(() => {
-                    this.music.max = Math.round(this.audio.duration)
-                    this.play('play')
-                }, 150)
+            audio(val) {
+                this.music.max = Math.floor(val.duration)
             }
         },
         components: {
@@ -101,13 +97,11 @@
         },
         mounted() {
             this.progressBar = this.$refs.progressBar
-            this.music.max = Math.floor(this.audio.duration)
         },
         methods: {
             // 播放音乐
             play(arg) {
                 if(this.state === 'play' || arg === 'play') {
-                    console.log('a')
                     this.audio.play()
                     this.state = 'pause'
                     this.progressBar.playSlider()
@@ -136,6 +130,7 @@
             },
             // 拖动进度条播放音乐
             dragMusic(arg) {
+                this.state = 'pause'
                 this.audio.currentTime = arg
                 this.audio.play()
             },
@@ -144,7 +139,14 @@
                 this.audio.volume = arg / 100
             },
             updatePlayMode() {},
-            nextByPlayMode() {}
+            nextByPlayMode() {},
+            // 单曲重复播放
+            playEnd() {
+                this.progressBar.init()
+                this.progressBar.playSlider()
+                this.audio.currentTime = 0
+                this.audio.play()
+            }
         }
     }
 </script>
