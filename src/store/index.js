@@ -9,7 +9,9 @@ export default new Vuex.Store({
             name: '',
             url: ''
         },
-        audio: {}
+        audio: {},
+        playingState: false,
+        currentLyricTime: 0
     },
     mutations: {
         setCurrentPlayingMusic(state, music) {
@@ -17,6 +19,12 @@ export default new Vuex.Store({
         },
         setAudio(state, audio) {
             state.audio = audio
+        },
+        playingStateToggle(state, bool) {
+            state.playingState = bool
+        },
+        setCurrentLyricTime(state, time) {
+            state.currentLyricTime = time
         }
     },
     actions: {

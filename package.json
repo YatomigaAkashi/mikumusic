@@ -12,7 +12,9 @@
   },
   "main": "background.js",
   "dependencies": {
+    "better-scroll": "^1.15.2",
     "core-js": "^3.6.4",
+    "lyric-parser": "^1.0.1",
     "node-id3": "^0.1.16",
     "vue": "^2.6.11",
     "vue-router": "^3.1.6",

@@ -1,45 +1,65 @@
 <template>
     <div class="Lyrics">
-        <ul v-if="lyrics">
-            <li v-for="val in lyric">
-                {{val}}
-            </li>
-        </ul>
+        <scroll :data="lyric.lines" ref="lyricList" class="scroll">
+            <div class="list">
+                <p ref="lyricLine" v-for="(val, index) in lyric.lines" :style="{'opacity': index !== currentLineIndex? '0.5': '1'}">{{val.txt}}</p>
+            </div>
+        </scroll>
     </div>
 </template>
 
 <script>
     import { ipcRenderer as ipc } from 'electron'
+    import lyricParser from 'lyric-parser'
+    import { mapState } from 'vuex'
+    import Scroll from "@/base/scroll"
+
     export default {
         props: {},
         data() {
             return {
                 lyrics: null,
                 lyric: [],
-                tlyric: []
+                tlyric: [],
+                currentLineIndex: 0,
+                playing: false
             }
         },
-        computed: {},
+        computed: {
+            ...mapState(['playingState', 'currentLyricTime'])
+        },
+        watch: {
+            playingState() {
+                if(this.playing === false) {
+                    this.lyric.play()
+                    this.playing = true
+                } else {
+                    this.lyric.togglePlay()
+                }
+            },
+            currentLyricTime(time) {
+                this.lyric.seek(time * 1000)
+            }
+        },
         mounted() {
             ipc.on('load-lyrics', (event, args) => {
                 this.lyrics = JSON.parse(args)
-                this.lyric = this.parseLyrics(this.lyrics.lrc.lyric)
-                this.tlyric = this.parseLyrics(this.lyrics.tlyric.lyric)
+                this.lyric = new lyricParser(this.lyrics.lrc.lyric, this.lyricListen)
+                this.tlyric = new lyricParser(this.lyrics.tlyric.lyric)
             })
         },
+        components: {
+            Scroll
+        },
         methods: {
-            parseLyrics(str) {
-                let reg = /\[(.*?):(.*?)\.(.*?)](.*)/
-                let arr = str.split('\n')
-                arr = arr.map(val => {
-                    return reg.exec(val)
-                })
-                return arr.map(val => {
-                    if(val && val[4]) {
-                        return val[4]
-                    }
-                    return ''
-                })
+            lyricListen({lineNum, txt}) {
+                this.currentLineIndex = lineNum
+                if(lineNum > 5) {
+                    let lineEl = this.$refs.lyricLine[lineNum - 5]
+                    this.$refs.lyricList.scrollToElement(lineEl, 1000)
+                } else {
+                    this.$refs.lyricList.scrollTo(0, 0, 1000)
+                }
             }
         }
     }
@@ -49,14 +69,18 @@
     .Lyrics
         width 100%
         height 100%
-        ul
-            display block
-            width 80%
-            height 80%
-            text-align center
+        color white
+        .scroll
             overflow hidden
-            li
+            height 80%
+            margin-top 10%
+            .list
                 display block
-                width 100%
-                height 20px
+                text-align center
+                overflow hidden
+                p
+                    display block
+                    width 100%
+                    height 20px
+                    opacity .5
 </style>

@@ -27,6 +27,7 @@ module.exports = {
         .set('common', resolve('src/common'))
         .set('components', resolve('src/components'))
         .set('views', resolve('src/views'))
+        .set('base', resolve('src/base'))
     },
     pluginOptions: {
         electronBuilder: {

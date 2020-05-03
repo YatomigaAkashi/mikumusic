@@ -43,7 +43,7 @@
 <script>
     import ProgressBar from '@/base/ProgressBar'
     import Volume from '@/base/volume'
-    import { mapState } from 'vuex'
+    import { mapState, mapMutations } from 'vuex'
 
     export default {
         props: {},
@@ -99,16 +99,19 @@
             this.progressBar = this.$refs.progressBar
         },
         methods: {
+            ...mapMutations(['playingStateToggle', 'setCurrentLyricTime']),
             // 播放音乐
             play(arg) {
                 if(this.state === 'play' || arg === 'play') {
                     this.audio.play()
                     this.state = 'pause'
                     this.progressBar.playSlider()
+                    this.playingStateToggle(true)
                 } else if(this.state === 'pause') {
                     this.audio.pause()
                     this.state = 'play'
                     this.progressBar.stopSlider()
+                    this.playingStateToggle(false)
                 }
             },
             // 播放上一曲
@@ -132,6 +135,7 @@
             dragMusic(arg) {
                 this.state = 'pause'
                 this.audio.currentTime = arg
+                this.setCurrentLyricTime(arg)
                 this.audio.play()
             },
             // 拖动进度条调整声音
