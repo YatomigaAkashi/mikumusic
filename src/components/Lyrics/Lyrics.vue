@@ -11,7 +11,7 @@
 <script>
     import { ipcRenderer as ipc } from 'electron'
     import lyricParser from 'lyric-parser'
-    import { mapState } from 'vuex'
+    import { mapState, mapMutations } from 'vuex'
     import Scroll from "@/base/scroll"
 
     export default {
@@ -26,11 +26,19 @@
             }
         },
         computed: {
-            ...mapState(['playingState', 'currentLyricTime'])
+            ...mapState(['playingState', 'currentLyricTime', 'currentPlayingMusic', 'audio'])
         },
         watch: {
+            lyric(val, pre) {
+                pre.stop()
+                if (this.playingState === true) {
+                    val.play()
+                }
+                this.$refs.lyricList.scrollTo(0, 0, 1000)
+                this.currentLineIndex = 0
+            },
             playingState() {
-                if(this.playing === false) {
+                if (this.playing === false) {
                     this.lyric.play()
                     this.playing = true
                 } else {
@@ -38,24 +46,30 @@
                 }
             },
             currentLyricTime(time) {
-                this.lyric.seek(time * 1000)
+                this.lyric.seek(this.audio.currentTime * 1000)
+            },
+            currentPlayingMusic(val) {
+                ipc.send('load-lyric', val.lyric)
             }
         },
         mounted() {
-            ipc.on('load-lyrics', (event, args) => {
-                this.lyrics = JSON.parse(args)
-                this.lyric = new lyricParser(this.lyrics.lrc.lyric, this.lyricListen)
-                this.tlyric = new lyricParser(this.lyrics.tlyric.lyric)
-            })
+            this._initIPC()
         },
         components: {
             Scroll
         },
         methods: {
+            ...mapMutations(['setCurrentLyricTime']),
+            _initIPC() {
+                ipc.on('load-lyric-reply', (event, args) => {
+                    this.lyrics = JSON.parse(args)
+                    this.lyric = new lyricParser(this.lyrics.lrc.lyric, this.lyricListen)
+                })
+            },
             lyricListen({lineNum, txt}) {
                 this.currentLineIndex = lineNum
-                if(lineNum > 5) {
-                    let lineEl = this.$refs.lyricLine[lineNum - 5]
+                if(lineNum > 4) {
+                    let lineEl = this.$refs.lyricLine[lineNum - 4]
                     this.$refs.lyricList.scrollToElement(lineEl, 1000)
                 } else {
                     this.$refs.lyricList.scrollTo(0, 0, 1000)
@@ -72,8 +86,10 @@
         color white
         .scroll
             overflow hidden
+            width 60%
             height 80%
             margin-top 10%
+            margin-left 15%
             .list
                 display block
                 text-align center
@@ -81,6 +97,7 @@
                 p
                     display block
                     width 100%
-                    height 20px
+                    min-height 20px
+                    line-height 30px
                     opacity .5
 </style>

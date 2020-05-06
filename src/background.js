@@ -1,6 +1,7 @@
 'use strict'
 
 import fs from 'fs'
+import path from 'path'
 import { app, protocol, BrowserWindow, ipcMain } from 'electron'
 import {
     createProtocol,
@@ -31,7 +32,8 @@ function createWindow () {
     })
     
     win.webContents.on('did-finish-load', function() {
-        win.webContents.send('load-lyrics', parseLyrics('I:/electron/mikumusic/public/爱言叶III'));
+        win.webContents.send('load-lyric-reply', parseLyrics('I:/electron/mikumusic/public/爱言叶III'))
+        loadLocalMusic()
     })
     
     if (process.env.WEBPACK_DEV_SERVER_URL) {
@@ -108,8 +110,50 @@ ipcMain.on('winmax', () => win.maximize())
 ipcMain.on('unwinmax', () => win.unmaximize())
 ipcMain.on('winclose', () => win.close())
 
+// 加载歌词
+ipcMain.on('load-lyric', (event, args) => {
+    fs.readFile(args, 'utf-8', (err, data) => {
+        if(err) {
+            console.log('读取文件失败')
+            return
+        }
+        event.sender.send('load-lyric-reply', data)
+    })
+})
+
 
 // 解析歌词
 function parseLyrics(path) {
     return fs.readFileSync(path, 'utf-8')
 }
+
+// 获取本地歌曲列表
+function loadLocalMusic() {
+    let localMusicPath = path.join(__dirname, '../public')
+    fs.readFile(path.join(localMusicPath, 'localMusic.json'), 'utf-8', (err, data) => {
+        data = JSON.parse(data)
+        data.forEach(val => {
+            val.music = path.join(localMusicPath, 'CloudMusic', val.music)
+            val.lyric = path.join(localMusicPath, 'lyric', val.lyric)
+        })
+        loadMusicMedia(data)
+        win.webContents.send('load-local-music', data)
+    })
+}
+
+import mp3 from 'node-id3'
+
+// 解析媒体资源标签
+function loadMusicMedia(arr) {
+    arr.forEach(val => {
+        let tags = mp3.read(val.music).raw
+        val.name = tags.TIT2
+        val.album = tags.TALB
+        val.author = tags.TPE1
+        val.img = {
+            type: tags.APIC.mime,
+            base64: Buffer.from(tags.APIC.imageBuffer, 'utf8').toString('base64')
+        }
+    })
+}
+

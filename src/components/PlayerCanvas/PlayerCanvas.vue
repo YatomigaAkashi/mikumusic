@@ -95,7 +95,7 @@
                 for(let i = 3; i <= 156; i++){
                     let cur = arr[(i - 2) * step]
                     let rectHeight = cur / 256 * height
-                    let valfix = rectHeight / 4 - 65
+                    let valfix = rectHeight / 4 - 50
 
                     ctx.beginPath()
                     ctx.globalAlpha = 0.75

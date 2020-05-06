@@ -1,6 +1,8 @@
 <template>
     <div class="playUI">
-        <div class="bck" :style="{'background-image': bckImage}"></div>
+        <transition name="bck-anim" >
+            <div class="bck" :style="{'background-image': bck_image_base64? bck_image_base64: bckImage}"></div>
+        </transition>
         <div class="play_name" style="z-index: 2">
             <div class="music_name">{{currentPlayingMusic.name}}</div>
             <div class="music_author">{{currentPlayingMusic.author}}</div>
@@ -30,15 +32,20 @@
         computed: {
             ...mapState(['currentPlayingMusic']),
             bck() {
-                return 'data:image/png;base64,' + this.currentPlayingMusic.img
+                if (!this.currentPlayingMusic.img) {
+                   return false
+                }
+                return 'data:image/png;base64,' + this.currentPlayingMusic.img.base64
             },
-            a() {
-                let data =  'url(' + this.bck + ')'
+            bck_image_base64() {
+                if (!this.bck) {
+                    return false
+                }
+                return  'url(' + this.bck + ')'
             }
         },
         methods: {
-            updateBackgroundImage() {
-            }
+            updateBackgroundImage() {}
         }
     }
 </script>
@@ -60,8 +67,8 @@
             position absolute
             top 0
             left 0
-            filter blur(20px) brightness(90%)
-            transform scale(1.2)
+            filter blur(30px) brightness(80%)
+            transform scale(1.5)
             background-position center
             background-repeat no-repeat
             background-size cover
@@ -84,4 +91,11 @@
                 font-weight lighter
         .control
             margin-bottom 10px
+
+    .bck-anim-enter-active, .bck-anim-leave-active {
+        transition: opacity .5s;
+    }
+    .bck-anim-enter, .bck-anim-leave-to /* .fade-leave-active below version 2.1.8 */ {
+        opacity: 0;
+    }
 </style>

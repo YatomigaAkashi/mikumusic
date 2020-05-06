@@ -5,13 +5,12 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
     state: {
-        currentPlayingMusic: {
-            name: '',
-            url: ''
-        },
+        currentPlayingMusic: {},
         audio: {},
         playingState: false,
-        currentLyricTime: 0
+        currentLyricTime: 0,
+        localMusicList: [],
+        playingMusicList: [],
     },
     mutations: {
         setCurrentPlayingMusic(state, music) {
@@ -25,6 +24,12 @@ export default new Vuex.Store({
         },
         setCurrentLyricTime(state, time) {
             state.currentLyricTime = time
+        },
+        setLocalMusicList(state, list) {
+            state.localMuiscList = list
+        },
+        setPlayingMusicList(state, list) {
+            state.playingMusicList = list
         }
     },
     actions: {

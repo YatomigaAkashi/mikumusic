@@ -69,11 +69,12 @@
                     mode: 'Shuffle',
                     name: 'random_play.png'
                 }],
-                currentPlayMode: 0
+                currentPlayMode: 0,
+                currentPlayingMusicNum: 0
             }
         },
         computed: {
-            ...mapState(['audio']),
+            ...mapState(['audio', 'playingMusicList', 'currentPlayingMusic']),
             curTime() {
                 return this.s_to_hs(this.music.val)
             },
@@ -89,7 +90,26 @@
         },
         watch: {
             audio(val) {
-                this.music.max = Math.floor(val.duration)
+                let _this = this
+                setTimeout(() => {
+                    _this.music.max = Math.floor(_this.audio.duration)
+                }, 200)
+            },
+            playingMusicList(val) {
+                this.setCurrentPlayingMusic(val[this.currentPlayingMusicNum])
+            },
+            currentPlayingMusicNum(val) {
+                this.setCurrentPlayingMusic(this.playingMusicList[val])
+            },
+            currentPlayingMusic(val) {
+                this.progressBar.init()
+                if(this.state === 'pause') {
+                    this.play('play')
+                }
+                let _this = this
+                setTimeout(() => {
+                    _this.music.max = Math.floor(_this.audio.duration)
+                }, 500)
             }
         },
         components: {
@@ -99,7 +119,7 @@
             this.progressBar = this.$refs.progressBar
         },
         methods: {
-            ...mapMutations(['playingStateToggle', 'setCurrentLyricTime']),
+            ...mapMutations(['playingStateToggle', 'setCurrentLyricTime', 'setCurrentPlayingMusic']),
             // 播放音乐
             play(arg) {
                 if(this.state === 'play' || arg === 'play') {
@@ -107,6 +127,9 @@
                     this.state = 'pause'
                     this.progressBar.playSlider()
                     this.playingStateToggle(true)
+                    setTimeout(() => {
+                        this.setCurrentLyricTime(this.audio.currentTime)
+                    }, 500)
                 } else if(this.state === 'pause') {
                     this.audio.pause()
                     this.state = 'play'
@@ -115,9 +138,19 @@
                 }
             },
             // 播放上一曲
-            prev() {},
+            prev() {
+                if (this.currentPlayingMusicNum === 0) {
+                    this.currentPlayingMusicNum = this.playingMusicList.length - 1
+                }
+                this.currentPlayingMusicNum--
+            },
             // 播放下一曲
-            next() {},
+            next() {
+                if (this.currentPlayingMusicNum === this.playingMusicList.length - 1) {
+                    this.currentPlayingMusicNum = 0
+                }
+                this.currentPlayingMusicNum++
+            },
             // 秒转分:秒
             s_to_hs(s){
                 let h
