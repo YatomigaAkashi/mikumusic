@@ -181,8 +181,10 @@
             playEnd() {
                 this.progressBar.init()
                 this.progressBar.playSlider()
-                this.audio.currentTime = 0
-                this.audio.play()
+                this.next()
+                // this.audio.currentTime = 0
+                // this.audio.play()
+                this.setCurrentLyricTime(0)
             }
         }
     }

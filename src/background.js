@@ -32,7 +32,6 @@ function createWindow () {
     })
     
     win.webContents.on('did-finish-load', function() {
-        win.webContents.send('load-lyric-reply', parseLyrics('I:/electron/mikumusic/public/爱言叶III'))
         loadLocalMusic()
     })
     
@@ -84,7 +83,6 @@ app.on('ready', async () => {
         // } catch (e) {
         //   console.error('Vue Devtools failed to install:', e.toString())
         // }
-        
     }
     createWindow()
 })
@@ -129,7 +127,7 @@ function parseLyrics(path) {
 
 // 获取本地歌曲列表
 function loadLocalMusic() {
-    let localMusicPath = path.join(__dirname, '../public')
+    let localMusicPath = __static
     fs.readFile(path.join(localMusicPath, 'localMusic.json'), 'utf-8', (err, data) => {
         data = JSON.parse(data)
         data.forEach(val => {

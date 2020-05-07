@@ -30,7 +30,9 @@
         },
         watch: {
             lyric(val, pre) {
-                pre.stop()
+                if(pre.lines) {
+                    pre.stop()
+                }
                 if (this.playingState === true) {
                     val.play()
                 }
@@ -90,6 +92,7 @@
             height 80%
             margin-top 10%
             margin-left 15%
+            cursor move
             .list
                 display block
                 text-align center

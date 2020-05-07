@@ -35,7 +35,8 @@ module.exports = {
                 win: {
                     icon: './public/app.ico'
                 },
-                productName: 'MikuMusic'
+                productName: 'MikuMusic',
+                asar: false,
             }
         }
     }

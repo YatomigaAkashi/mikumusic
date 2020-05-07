@@ -3,7 +3,17 @@ import VueRouter from 'vue-router'
 
 Vue.use(VueRouter)
 
-const routes = []
+const routes = [
+    {
+        path: '/',
+        redirect: '/local'
+    },
+    {
+        path: '/local',
+        name: 'LocalMusic',
+        component: () => import('views/localMusic/localMusic')
+    }
+]
 
 const router = new VueRouter({
     mode: 'history',
