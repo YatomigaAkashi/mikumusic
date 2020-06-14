@@ -1,5 +1,5 @@
 ### 主界面
-![Snipaste_2020-06-14_17-57-38.png](http://jige.00ling.cn/2020/06/14/24a659345eed1.png)
+![Snipaste_2020-06-14_18-49-07.png](http://jige.00ling.cn/2020/06/14/e60e7f2d32df0.png)
 
 ### 本地歌单界面
 ![Snipaste_2020-06-14_17-58-11.png](http://jige.00ling.cn/2020/06/14/10ec8cab18678.png)
